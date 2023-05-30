@@ -3,6 +3,7 @@ package com.example.jetbmicalculator
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,8 @@ import com.example.jetbmicalculator.components.LabeledTextField
 import com.example.jetbmicalculator.ui.theme.JetBMICalculatorTheme
 
 class MainActivity : ComponentActivity() {
+    private val viewModel by viewModels<MainViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -36,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    mainContent()
+                    MainContent(viewModel)
                 }
             }
         }
@@ -44,7 +47,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun mainContent() {
+fun MainContent( viewModel: MainViewModel ) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -59,23 +62,23 @@ fun mainContent() {
         Spacer(modifier = Modifier.height(30.dp))
 
         LabeledTextField(
-            value = "",
-            onValueChange = { /* TODO */ },
+            value = viewModel.height,
+            onValueChange = { viewModel.height = it },
             label = "身長(cm)",
             placeholder = "170",
         )
         Spacer(modifier = Modifier.height(20.dp))
 
         LabeledTextField(
-            value = "",
-            onValueChange = { /* TODO */ },
+            value = viewModel.weight,
+            onValueChange = { viewModel.weight = it },
             label = "体重(kg)",
             placeholder = "65",
         )
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = { /* TODO */ },
+            onClick = { viewModel.calculateBmi() },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFF85F6A),
             ),
@@ -93,14 +96,16 @@ fun mainContent() {
         Spacer(modifier = Modifier.height(20.dp))
 
         //  結果
-        Text(
-            text = "あなたのBMIは22.0です",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth(),
-        )
+        if( viewModel.bmi > 0f ) {
+            Text(
+                text = "あなたのBMIは${viewModel.bmi}です",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.Gray,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth(),
+            )
+        }
     }
 }
